@@ -62,6 +62,7 @@
     <header>
       <h1>Sheets API Quickstart</h1>
       <h4 id="liveTime">Time Now: <span id="clock"></span></h4>
+      <p id="lastUpdated">Last Updated: Loading...</p>
     </header>
     <div class="container">
       <button id="authorize_button" onclick="handleAuthClick()">
@@ -220,6 +221,55 @@
 
       // Update the clock every second
       setInterval(updateClock, 1000);
+      // Function to fetch the last updated timestamp
+      async function fetchLastUpdatedTimestamp() {
+        try {
+          const response = await gapi.client.sheets.spreadsheets.get({
+            spreadsheetId: "1rG1Aw_K6Ni4APm5NSaaSRrCmGq9EocTbt4WD0UlO7T4", // Replace with your actual spreadsheet ID
+          });
+
+          const lastUpdated = new Date(response.result.properties.modifiedTime);
+          const timestampString = lastUpdated.toLocaleString();
+
+          // Display the last updated timestamp
+          document.getElementById(
+            "lastUpdated"
+          ).textContent = `Last Updated: ${timestampString}`;
+        } catch (err) {
+          console.error("Error fetching last updated timestamp:", err);
+        }
+      }
+
+      // Call the function to fetch the last updated timestamp when the page loads
+      fetchLastUpdatedTimestamp();
+      // Function to fetch the latest modified cells of columns A and B in the "Trial" sheet
+      async function fetchLatestData() {
+        try {
+          const response = await gapi.client.sheets.spreadsheets.values.get({
+            spreadsheetId: "1rG1Aw_K6Ni4APm5NSaaSRrCmGq9EocTbt4WD0UlO7T4", // Replace with your actual spreadsheet ID
+            range: "Trial!A:B", // Fetch all data in columns A and B
+          });
+
+          const values = response.result.values;
+
+          if (values && values.length > 0) {
+            // Sort the values by timestamp (assuming timestamp is in column A)
+            values.sort((a, b) => new Date(b[0]) - new Date(a[0]));
+
+            // Display the latest entry (row) from columns A and B
+            const latestEntry = values[0];
+            const output = `Number: ${latestEntry[0]}, Time: ${latestEntry[1]}`;
+            document.getElementById("content").innerText = output;
+          } else {
+            document.getElementById("content").innerText = "No values found.";
+          }
+        } catch (err) {
+          console.error("Error fetching latest data:", err);
+        }
+      }
+
+      // Call the function to fetch the latest data when the page loads
+      fetchLatestData();
     </script>
     <script
       async
