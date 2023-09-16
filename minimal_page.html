@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sheets API Quickstart</title>
+    <title>RealTime Count</title>
     <style>
       body {
         font-family: Arial, sans-serif;
@@ -60,17 +60,17 @@
   </head>
   <body>
     <header>
-      <h1>Sheets API Quickstart</h1>
+      <h1>RealTime Count of the GYM</h1>
       <h4 id="liveTime">Time Now: <span id="clock"></span></h4>
-      <p id="lastUpdated">Last Updated: Loading...</p>
+      <h4 id="Time">Last Updated At: <span id="time_latest"></span></h4>
     </header>
     <div class="container">
       <button id="authorize_button" onclick="handleAuthClick()">
         Authorize
       </button>
-      <button id="signout_button" onclick="handleSignoutClick()">
+      <!-- <button id="signout_button" onclick="handleSignoutClick()">
         Sign Out
-      </button>
+      </button> -->
       <pre id="content"></pre>
     </div>
     <footer>ILGC Project by Jahnvi, Pratham, Purv, Tanay</footer>
@@ -95,11 +95,11 @@
       const SCOPES = "https://www.googleapis.com/auth/spreadsheets.readonly";
 
       let tokenClient;
-      let gapiInited = false;
-      let gisInited = false;
+      let gapiInited = true;
+      let gisInited = true;
 
       document.getElementById("authorize_button").style.visibility = "hidden";
-      document.getElementById("signout_button").style.visibility = "hidden";
+      // document.getElementById("signout_button").style.visibility = "hidden";
 
       /**
        * Callback after api.js is loaded.
@@ -118,7 +118,7 @@
           discoveryDocs: [DISCOVERY_DOC],
         });
         gapiInited = true;
-        maybeEnableButtons();
+        EnableButtons();
       }
 
       /**
@@ -131,13 +131,12 @@
           callback: "", // defined later
         });
         gisInited = true;
-        maybeEnableButtons();
+        EnableButtons();
       }
-
       /**
        * Enables user interaction after all libraries are loaded.
        */
-      function maybeEnableButtons() {
+      function EnableButtons() {
         if (gapiInited && gisInited) {
           document.getElementById("authorize_button").style.visibility =
             "visible";
@@ -152,10 +151,11 @@
           if (resp.error !== undefined) {
             throw resp;
           }
-          document.getElementById("signout_button").style.visibility =
-            "visible";
+          //  document.getElementById("signout_button").style.visibility =
+          //("visible");
           document.getElementById("authorize_button").innerText = "Refresh";
           await listMajors();
+          await latestTime();
         };
 
         if (gapi.client.getToken() === null) {
@@ -168,24 +168,28 @@
         }
       }
 
-      /**
-       *  Sign out the user upon button click.
-       */
-      function handleSignoutClick() {
-        const token = gapi.client.getToken();
-        if (token !== null) {
-          google.accounts.oauth2.revoke(token.access_token);
-          gapi.client.setToken("");
-          document.getElementById("content").innerText = "";
-          document.getElementById("authorize_button").innerText = "Authorize";
-          document.getElementById("signout_button").style.visibility = "hidden";
+      async function latestTime() {
+        let response;
+        try {
+          response = await gapi.client.sheets.spreadsheets.values.get({
+            spreadsheetId: "1rG1Aw_K6Ni4APm5NSaaSRrCmGq9EocTbt4WD0UlO7T4",
+            range: "Trial!A2:C",
+          });
+        } catch (err) {
+          document.getElementById("time_latest").innerText = err.message;
+          return;
         }
+        const range = response.result;
+        if (!range || !range.values || range.values.length == 0) {
+          document.getElementById("time_latest").innerText = "No values found.";
+          return;
+        }
+        const output = range.values.reduce(
+          (str, row) => `${row[1]}\t ${row[2]}\n`
+        );
+        document.getElementById("time_latest").innerText = output;
       }
 
-      /**
-       * Print the names and majors of students in a sample spreadsheet:
-       * https://docs.google.com/spreadsheets/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit
-       */
       async function listMajors() {
         let response;
         try {
@@ -205,8 +209,8 @@
         }
         // Flatten to string to display
         const output = range.values.reduce(
-          (str, row) => `${str}${row[0]}, ${row[1]}\n`,
-          "Number, Time:\n"
+          (str, row) => `${row[0]}\t ${row[1]}\n`,
+          "Number\t Time\n"
         );
         document.getElementById("content").innerText = output;
       }
@@ -216,60 +220,11 @@
         const clock = document.getElementById("clock");
         const now = new Date();
         const timeString = now.toLocaleTimeString();
-        clock.textContent = timeString;
+        clock.textContent = timeString.toUpperCase();
       }
 
       // Update the clock every second
       setInterval(updateClock, 1000);
-      // Function to fetch the last updated timestamp
-      async function fetchLastUpdatedTimestamp() {
-        try {
-          const response = await gapi.client.sheets.spreadsheets.get({
-            spreadsheetId: "1rG1Aw_K6Ni4APm5NSaaSRrCmGq9EocTbt4WD0UlO7T4", // Replace with your actual spreadsheet ID
-          });
-
-          const lastUpdated = new Date(response.result.properties.modifiedTime);
-          const timestampString = lastUpdated.toLocaleString();
-
-          // Display the last updated timestamp
-          document.getElementById(
-            "lastUpdated"
-          ).textContent = `Last Updated: ${timestampString}`;
-        } catch (err) {
-          console.error("Error fetching last updated timestamp:", err);
-        }
-      }
-
-      // Call the function to fetch the last updated timestamp when the page loads
-      fetchLastUpdatedTimestamp();
-      // Function to fetch the latest modified cells of columns A and B in the "Trial" sheet
-      async function fetchLatestData() {
-        try {
-          const response = await gapi.client.sheets.spreadsheets.values.get({
-            spreadsheetId: "1rG1Aw_K6Ni4APm5NSaaSRrCmGq9EocTbt4WD0UlO7T4", // Replace with your actual spreadsheet ID
-            range: "Trial!A:B", // Fetch all data in columns A and B
-          });
-
-          const values = response.result.values;
-
-          if (values && values.length > 0) {
-            // Sort the values by timestamp (assuming timestamp is in column A)
-            values.sort((a, b) => new Date(b[0]) - new Date(a[0]));
-
-            // Display the latest entry (row) from columns A and B
-            const latestEntry = values[0];
-            const output = `Number: ${latestEntry[0]}, Time: ${latestEntry[1]}`;
-            document.getElementById("content").innerText = output;
-          } else {
-            document.getElementById("content").innerText = "No values found.";
-          }
-        } catch (err) {
-          console.error("Error fetching latest data:", err);
-        }
-      }
-
-      // Call the function to fetch the latest data when the page loads
-      fetchLatestData();
     </script>
     <script
       async
