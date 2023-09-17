@@ -8,11 +8,7 @@
       body {
         font-family: Arial, sans-serif;
         background-color: #f0f0f0;
-        margin: 0;
-        padding: 0;
-        display: flex;
         flex-direction: column;
-        justify-content: center;
         align-items: center;
         height: 100vh;
       }
@@ -22,15 +18,16 @@
         background-color: #ebebeb;
         color: #ae4a4a;
         padding: 20px;
+        margin-bottom: 20px;
       }
 
       .container {
         text-align: center;
         background-color: #fff;
-        padding: 20px;
-        border-radius: 5px;
+        padding: 30px;
+        border-radius: 2.5px;
         box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
-        margin-top: 20px;
+        margin: 5px;
       }
 
       button {
@@ -51,7 +48,8 @@
       }
 
       footer {
-        background-color: #777777;
+        margin-top: 20px;
+        background-color: #5a5656;
         color: #fff;
         text-align: center;
         padding: 10px;
@@ -62,7 +60,9 @@
     <header>
       <h1>RealTime Count of the GYM</h1>
       <h4 id="liveTime">Time Now: <span id="clock"></span></h4>
-      <h4 id="Time">Last Updated At: <span id="time_latest"></span></h4>
+      <h4 id="Time">
+        Last Updated At: <span id="time_latest">Loading ...</span>
+      </h4>
     </header>
     <div class="container">
       <button id="authorize_button" onclick="handleAuthClick()">
@@ -208,10 +208,12 @@
           return;
         }
         // Flatten to string to display
-        const output = range.values.reduce(
-          (str, row) => `${row[0]}\t ${row[1]}\n`,
-          "Number\t Time\n"
-        );
+        const output =
+          "People At Gym Now\tTime\n" +
+          range.values.reduce(
+            (str, row) => `\t${row[0]}\t\t${row[1]}\n` //,
+            // "Number\t Time\n"
+          );
         document.getElementById("content").innerText = output;
       }
 
@@ -219,8 +221,36 @@
       function updateClock() {
         const clock = document.getElementById("clock");
         const now = new Date();
-        const timeString = now.toLocaleTimeString();
-        clock.textContent = timeString.toUpperCase();
+        let day; // Declare the 'day' variable outside of the if-else statements
+
+        switch (now.getDay()) {
+          case 0:
+            day = "Sunday";
+            break;
+          case 1:
+            day = "Monday";
+            break;
+          case 2:
+            day = "Tuesday";
+            break;
+          case 3:
+            day = "Wednesday";
+            break;
+          case 4:
+            day = "Thursday";
+            break;
+          case 5:
+            day = "Friday";
+            break;
+          case 6:
+            day = "Saturday";
+            break;
+          default:
+            day = "Day"; // Default to "Day" if none of the above cases match
+        }
+
+        const timeString = now.toLocaleTimeString().toUpperCase() + " " + day;
+        clock.textContent = timeString;
       }
 
       // Update the clock every second
