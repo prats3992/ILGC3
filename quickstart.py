@@ -1,3 +1,6 @@
+### USE THIS TO AUTO SHIFT ONE DAY'S DATA FROM MAIN SHEET TO DATA COLLECTING AND CLEAR MAIN FOR MAIN TO JUST HAVE THAT DAY'S DATA
+
+
 from __future__ import print_function
 
 import os.path
