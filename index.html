@@ -350,12 +350,12 @@
 
       // Fetch and display data when the page loads
       window.addEventListener("load", fetchData);
-
-      // Add event listener for the refresh button
-      const refreshButton = document.getElementById("refresh-button");
-      refreshButton.addEventListener("click", function () {
-        // Reload the page
-        location.reload();
+      document.addEventListener("DOMContentLoaded", function () {
+        // Add event listener for the refresh button
+        const refreshButton = document.getElementById("refresh-button");
+        refreshButton.addEventListener("click", function () {
+          location.reload();
+        });
       });
     </script>
   </head>
