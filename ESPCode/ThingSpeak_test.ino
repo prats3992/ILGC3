@@ -1,3 +1,7 @@
+/**
+* Code to test ThingSpeak API
+*/
+
 // ------style guard ----
 
 #ifdef __cplusplus
