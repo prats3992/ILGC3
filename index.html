@@ -286,7 +286,7 @@
             console.log("Trend:", trend);
 
             const timeLatest = document.getElementById("time_latest");
-            timeLatest.textContent = "Last Updated At: " + secondCellContent;
+            timeLatest.textContent = "Last Updated: " + secondCellContent;
             const numPeopleLatest = document.getElementById("numppllatest");
             numPeopleLatest.textContent =
               " Current Gym Occupancy: " + cells[0].textContent;
@@ -367,13 +367,13 @@
       <h1>Real Life Crowding Statistics</h1>
       <hr class="zigzag-hr" />
       <div id="liveTime">
-        <h4 style="margin: 10px 4px">Time Now: <span id="clock"></span></h4>
-        <h4 style="margin: 10px 4px">
+        <h2 style="margin: 10px 4px">
           <span id="numppllatest">Loading...</span>
-        </h4>
-        <h4 style="margin: 10px 4px" id="Time">
+        </h2>
+        <h3 style="margin: 10px 4px">Time Now: <span id="clock"></span></h3>
+        <h3 style="margin: 10px 4px" id="Time">
           <span id="time_latest">Loading ...</span>
-        </h4>
+        </h3>
       </div>
       <div class="table-container">
         <div class="button-container">
