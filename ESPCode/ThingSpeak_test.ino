@@ -65,6 +65,11 @@ void setup() {
     {
 
       WiFi.begin(ssid, password);
+      Serial.print("Trying to connect... (");
+      Serial.print(ssid);
+      Serial.print(")(");
+      Serial.print(password);
+      Serial.println(")");
 
       delay(1000);
 
@@ -133,5 +138,5 @@ void loop() {
     lastTime = millis();
 
   }
-
+  delay(3000);
 }
