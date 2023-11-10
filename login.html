@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login Page</title>
+    <style>
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f2f2f2;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+      }
+      form {
+        background-color: #fff;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        width: 300px;
+      }
+      h2 {
+        text-align: center;
+        color: #333;
+      }
+      label {
+        display: block;
+        margin-bottom: 8px;
+        color: #333;
+      }
+      input {
+        width: calc(100% - 18px);
+        padding: 8px;
+        margin-bottom: 16px;
+        box-sizing: border-box;
+      }
+      #showPasswordContainer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 16px;
+      }
+      button {
+        background-color: #4caf50;
+        color: white;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        width: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <form id="loginForm">
+      <h2>Login</h2>
+      <label for="username">Username:</label>
+      <input type="text" id="username" name="username" required />
+
+      <label for="password">Password:</label>
+      <input type="password" id="password" name="password" required />
+
+      <div id="showPasswordContainer">
+        <label for="showPassword">Show Password</label>
+        <input type="checkbox" id="showPassword" />
+      </div>
+
+      <button type="button" onclick="checkLogin()">Login</button>
+    </form>
+
+    <script>
+      function checkLogin() {
+        var username = document.getElementById("username").value;
+        var password = document.getElementById("password").value;
+        const holder = "πρατηαμ";
+        const user_hold = "Pratham";
+        // Check if username and password match
+        if (username === user_hold && password === holder) {
+          window.location.href = "accepted.html"; // Redirect to accepted.html
+        } else {
+          alert("Invalid username or password. Please try again.");
+        }
+      }
+
+      document
+        .getElementById("showPassword")
+        .addEventListener("change", function () {
+          var passwordField = document.getElementById("password");
+          if (this.checked) {
+            passwordField.type = "text";
+          } else {
+            passwordField.type = "password";
+          }
+        });
+    </script>
+  </body>
+</html>
