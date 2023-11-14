@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
+    />
+    <title>Gym Counter</title>
+    <link rel="stylesheet" href="style.css" />
+    <script
+      type="text/javascript"
+      src="https://www.gstatic.com/charts/loader.js"
+    ></script>
+    <script type="text/javascript">
+      // Update the live clock
+      function updateClock() {
+        const clock = document.getElementById("clock");
+        const now = new Date();
+        const timeOptions = {
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+          hour12: false, // Use 24-hour format
+        };
+        const dateOptions = {
+          weekday: "long", // Display the full weekday name
+        };
+        const timeString = now.toLocaleTimeString("en-US", timeOptions);
+        const dateString = now.toLocaleDateString("en-US", dateOptions);
+
+        // Display both time and day
+        clock.textContent = `${timeString}, ${dateString}`;
+      }
+
+      // Update the clock every second
+      setInterval(updateClock, 1000);
+    </script>
+  </head>
+  <body>
+    <header>
+      <h1>Real Life Crowding Statistics</h1>
+      <hr class="zigzag-hr" />
+      <div id="liveTime">
+        <h2 style="margin: 10px 4px">
+          <span id="numppllatest">Loading...</span>
+        </h2>
+        <h3 style="margin: 10px 4px">Time Now: <span id="clock"></span></h3>
+        <h3 style="margin: 10px 4px" id="Time">
+          <span id="time_latest">Loading ...</span>
+        </h3>
+      </div>
+      <div class="table-container">
+        <table id="data-table" style="display: none">
+          <thead>
+            <tr>
+              <th>Column A (Int)</th>
+              <th>Column B (HH:MM)</th>
+              <th>Column C (Day)</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div class="time-container"></div>
+      <div id="GymTimings">
+        <h4 id="Gym Timings">
+          <span id="timing">
+            <div>
+              <strong><u>TIMINGS</u></strong>
+              <br /><br />
+              <div>
+                W.E.F 20<sup>th</sup> August 2023
+                <pre style="font-size: large">
+0600 Hours - 0900 Hours
+
+1630 Hours - 2200 Hours</pre
+                >
+              </div>
+            </div>
+          </span>
+        </h4>
+      </div>
+      <br />
+      <div class="button-container">
+        <button id="refresh-button">Refresh Page</button>
+      </div>
+      <br /><br /><br />
+      <div id="morning-chart"></div>
+      <div id="evening-chart"></div>
+      <br />
+      <div id="prev-morning-chart"></div>
+      <div id="prev-evening-chart"></div>
+    </header>
+    <script>
+      function init() {
+        gapi.load("client", fetchSheetData);
+      }
+
+      function fetchSheetData() {
+        gapi.client
+          .init({
+            apiKey: "AIzaSyCJvw8w8wrPylgWhjFfDZ2I2UgFGF8nIjs",
+          })
+          .then(function () {
+            gapi.client.load("sheets", "v4", () => {
+              gapi.client.sheets.spreadsheets.values
+                .get({
+                  spreadsheetId: "1rG1Aw_K6Ni4APm5NSaaSRrCmGq9EocTbt4WD0UlO7T4",
+                  range: "Trial!A1:C20",
+                })
+                .then(function (response) {
+                  const values = response.result.values;
+                  if (values) {
+                    displaySheetData(values);
+                    createLineCharts(values);
+                  }
+                });
+            });
+          });
+      }
+
+      function displaySheetData(data) {
+        const tableBody = document.querySelector("#data-table tbody");
+        tableBody.innerHTML = "";
+
+        data.shift(); // Remove the header row
+
+        data.forEach((row) => {
+          const [colA, colB, colC] = row;
+          const newRow = document.createElement("tr");
+          newRow.innerHTML = `
+            <td>${colA}</td>
+            <td>${colB}</td>
+            <td>${colC}</td>
+        `;
+          tableBody.appendChild(newRow);
+        });
+
+        // Get the timestamp from the last row (assuming index 1 and 2 represent the time)
+        const lastRow = data[data.length - 1];
+        const timestamp = lastRow
+          ? `Last Updated: ${lastRow[1]} ${lastRow[2]}`
+          : "Last Updated: N/A";
+
+        // Update the timestamp in the span element
+        const timeLatestSpan = document.getElementById("time_latest");
+        timeLatestSpan.textContent = timestamp;
+
+        // Fetch data for the second chart from the sheet with the obtained name
+        const sheetName = lastRow ? lastRow[2] : "N/A";
+        fetchSecondSheetData(sheetName);
+      }
+
+      function fetchSecondSheetData(sheetName) {
+        if (!sheetName || sheetName === "N/A") {
+          // Handle the case where sheetName is not available
+          return;
+        }
+
+        gapi.client.sheets.spreadsheets.values
+          .get({
+            spreadsheetId: "1rG1Aw_K6Ni4APm5NSaaSRrCmGq9EocTbt4WD0UlO7T4", // Replace with your actual spreadsheet ID
+            range: `${sheetName}!A1:C20`,
+          })
+          .then(function (response) {
+            const values = response.result.values;
+            if (values) {
+              createSecondLineChart(values);
+            }
+          });
+      }
+
+      function createSecondLineChart(data) {
+        google.charts.load("current", { packages: ["corechart"] });
+        google.charts.setOnLoadCallback(drawSecondChart);
+
+        function drawSecondChart() {
+          const pre_morningData = new google.visualization.DataTable();
+          pre_morningData.addColumn("timeofday", "Time");
+          pre_morningData.addColumn("number", "Number");
+
+          const pre_eveningData = new google.visualization.DataTable();
+          pre_eveningData.addColumn("timeofday", "Time");
+          pre_eveningData.addColumn("number", "Number");
+
+          data.forEach((row) => {
+            const [colA, colB] = row;
+            const [hours, minutes] = colB.split(":");
+            const timeOfDay = new Date(
+              0,
+              0,
+              0,
+              parseInt(hours),
+              parseInt(minutes),
+              0
+            );
+
+            if (
+              timeOfDay >= new Date(0, 0, 0, 6, 0, 0) &&
+              timeOfDay <= new Date(0, 0, 0, 9, 0, 0)
+            ) {
+              pre_morningData.addRow([
+                [parseInt(hours), parseInt(minutes), 0],
+                parseInt(colA),
+              ]);
+            }
+            if (
+              timeOfDay >= new Date(0, 0, 0, 16, 30, 0) &&
+              timeOfDay <= new Date(0, 0, 0, 22, 0, 0)
+            ) {
+              pre_eveningData.addRow([
+                [parseInt(hours), parseInt(minutes), 0],
+                parseInt(colA),
+              ]);
+            }
+          });
+
+          const options = {
+            title: "Last " + new Date().toLocaleString('default', { weekday: 'long' }),
+            // curveType: 'function',
+            legend: { position: "none" },
+            hAxis: {
+              title: "Time",
+              gridlines: { count: 10 },
+              format: "HH:mm",
+            },
+            vAxis: {
+              title: "Number of People",
+              gridlines: { count: 10 },
+            },
+            pointSize: 8,
+            pointShape: { type: "square", rotation: 90 },
+            crosshair: { trigger: "both" },
+          };
+
+          const morningChart = new google.visualization.LineChart(
+            document.getElementById("prev-morning-chart")
+          );
+          morningChart.draw(pre_morningData, options);
+
+          const eveningChart = new google.visualization.LineChart(
+            document.getElementById("prev-evening-chart")
+          );
+          eveningChart.draw(pre_eveningData, options);
+        }
+      }
+
+      function createLineCharts(data) {
+        google.charts.load("current", { packages: ["corechart"] });
+        google.charts.setOnLoadCallback(drawCharts);
+
+        function drawCharts() {
+          const morningData = new google.visualization.DataTable();
+          morningData.addColumn("timeofday", "Time");
+          morningData.addColumn("number", "Number");
+
+          const eveningData = new google.visualization.DataTable();
+          eveningData.addColumn("timeofday", "Time");
+          eveningData.addColumn("number", "Number");
+
+          data.forEach((row) => {
+            const [colA, colB] = row;
+            const [hours, minutes] = colB.split(":");
+            const timeOfDay = new Date(
+              0,
+              0,
+              0,
+              parseInt(hours),
+              parseInt(minutes),
+              0
+            );
+
+            if (
+              timeOfDay >= new Date(0, 0, 0, 6, 0, 0) &&
+              timeOfDay <= new Date(0, 0, 0, 9, 0, 0)
+            ) {
+              morningData.addRow([
+                [parseInt(hours), parseInt(minutes), 0],
+                parseInt(colA),
+              ]);
+            }
+            if (
+              timeOfDay >= new Date(0, 0, 0, 16, 30, 0) &&
+              timeOfDay <= new Date(0, 0, 0, 22, 0, 0)
+            ) {
+              eveningData.addRow([
+                [parseInt(hours), parseInt(minutes), 0],
+                parseInt(colA),
+              ]);
+            }
+          });
+
+          const options = {
+            title: new Date().toLocaleString('default', { weekday: 'long' }),
+            // curveType: 'function',
+            legend: { position: "none" },
+            hAxis: {
+              title: "Time",
+              gridlines: { count: 10 },
+              format: "HH:mm",
+            },
+            vAxis: {
+              title: "Number of People",
+              gridlines: { count: 10 },
+            },
+            pointSize: 8,
+            pointShape: { type: "square", rotation: 90 },
+            crosshair: { trigger: "both" },
+          };
+
+          const morningChart = new google.visualization.LineChart(
+            document.getElementById("morning-chart")
+          );
+          morningChart.draw(morningData, options);
+
+          const eveningChart = new google.visualization.LineChart(
+            document.getElementById("evening-chart")
+          );
+          eveningChart.draw(eveningData, options);
+        }
+      }
+
+      // Load the Google API client library
+      (function () {
+        const script = document.createElement("script");
+        script.src = "https://apis.google.com/js/api.js";
+        script.onload = init;
+        document.body.appendChild(script);
+      })();
+
+      // Get the current local time
+      const now = new Date();
+      const currentHour = now.getHours();
+
+      // Get references to the chart div elements
+      const morningChart = document.getElementById("morning-chart");
+      const eveningChart = document.getElementById("evening-chart");
+      const prev_morningData = document.getElementById("prev-morning-chart");
+      const prev_eveningData = document.getElementById("prev-evening-chart");
+      // Check the current time and hide/unhide the charts accordingly
+      if (
+        (currentHour >= 4 && currentHour < 16) ||
+        (currentHour >= 16 && currentHour < 4)
+      ) {
+        // Show the evening chart and hide the morning chart
+        morningChart.style.display = "none";
+        eveningChart.style.display = "block";
+        prev_eveningData.style.display = "block";
+        prev_morningData.style.display = "none";
+      } else {
+        // Show the morning chart and hide the evening chart
+        morningChart.style.display = "block";
+        eveningChart.style.display = "none";
+        prev_morningData.style.display = "block";
+        prev_eveningData.style.display = "none";
+      }
+    </script>
+  </body>
+  <footer>
+    ILGC Project by Jahnvi,
+    <a href="login.html" style="text-decoration: none; color: inherit"
+      >Pratham</a
+    >, Purv, Tanay
+  </footer>
+</html>
