@@ -237,9 +237,7 @@
           });
 
           const options = {
-            title:
-              "Last " +
-              new Date().toLocaleString("default", { weekday: "long" }),
+            title: "Last " + getLastRowValue(data, 2),
             legend: { position: "none" },
             hAxis: {
               title: "Time",
@@ -276,6 +274,11 @@
             return "blue"; // Constant trend
           }
         }
+
+        function getLastRowValue(data, columnIndex) {
+          const lastRow = data[data.length - 1];
+          return lastRow ? lastRow[columnIndex] : "N/A";
+        }
       }
 
       function createLineCharts(data) {
@@ -286,12 +289,12 @@
           const morningData = new google.visualization.DataTable();
           morningData.addColumn("timeofday", "Time");
           morningData.addColumn("number", "Number");
-          morningData.addColumn({ role: "style" }); // Add style column
+          morningData.addColumn({ role: "style" });
 
           const eveningData = new google.visualization.DataTable();
           eveningData.addColumn("timeofday", "Time");
           eveningData.addColumn("number", "Number");
-          eveningData.addColumn({ role: "style" }); // Add style column
+          eveningData.addColumn({ role: "style" });
 
           data.forEach((row, i) => {
             const [colA, colB] = row;
@@ -312,7 +315,7 @@
 
               style = determineTrendStyle(prevColA, currentColA);
             } else {
-              style = "blue"; // Default color for the first data point
+              style = "blue";
             }
 
             if (
@@ -337,13 +340,33 @@
             }
           });
 
-          const options = {
-            title: new Date().toLocaleString("default", { weekday: "long" }),
+          const morningOptions = {
+            title: getLastRowValue(data, 2),
             legend: { position: "none" },
             hAxis: {
               title: "Time",
               gridlines: { count: 10 },
               format: "HH:mm",
+              ticks: getMorningTicks(),
+            },
+            vAxis: {
+              title: "Number of People",
+              gridlines: { count: 10 },
+            },
+            pointSize: 8,
+            pointShape: { type: "square", rotation: 90 },
+            crosshair: { trigger: "both" },
+            backgroundColor: "#ebebeb",
+          };
+
+          const eveningOptions = {
+            title: getLastRowValue(data, 2),
+            legend: { position: "none" },
+            hAxis: {
+              title: "Time",
+              gridlines: { count: 10 },
+              format: "HH:mm",
+              ticks: getEveningTicks(),
             },
             vAxis: {
               title: "Number of People",
@@ -358,22 +381,52 @@
           const morningChart = new google.visualization.LineChart(
             document.getElementById("morning-chart")
           );
-          morningChart.draw(morningData, options);
+          morningChart.draw(morningData, morningOptions);
 
           const eveningChart = new google.visualization.LineChart(
             document.getElementById("evening-chart")
           );
-          eveningChart.draw(eveningData, options);
+          eveningChart.draw(eveningData, eveningOptions);
         }
 
         function determineTrendStyle(prevValue, currentValue) {
           if (currentValue > prevValue) {
-            return "red"; // Increasing trend
+            return "red";
           } else if (currentValue < prevValue) {
-            return "green"; // Decreasing trend
+            return "green";
           } else {
-            return "blue"; // Constant trend
+            return "blue";
           }
+        }
+
+        function getLastRowValue(data, columnIndex) {
+          const lastRow = data[data.length - 1];
+          return lastRow ? lastRow[columnIndex] : "N/A";
+        }
+
+        function getMorningTicks() {
+          const ticks = [];
+          for (let hour = 6; hour <= 9; hour++) {
+            for (let minute = 0; minute < 60; minute += 30) {
+              ticks.push([hour, minute, 0]);
+            }
+          }
+          return ticks;
+        }
+
+        function getEveningTicks() {
+          const ticks = [];
+          for (let hour = 16; hour <= 22; hour++) {
+            for (let minute = 0; minute < 60; minute += 30) {
+              if (
+                !(hour === 16 && minute === 0) &&
+                !(hour === 22 && minute === 30)
+              ) {
+                ticks.push([hour, minute, 0]);
+              }
+            }
+          }
+          return ticks;
         }
       }
 
