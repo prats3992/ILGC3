@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="denied.css">
+    <title>Access Denied</title>
+</head>
+<body>
+    <h1>Access Denied</h1>
+    <p>Sorry, you do not have permission to access this page.</p>
+    <button onclick="returnToHome()">Return to Home</button>
+
+    <script>
+        // Redirect to index.html after 2 minutes
+        setTimeout(function() {
+            window.location.href = 'index.html';
+        }, 120000); // 120000 milliseconds = 2 minutes
+
+        // Function to handle the button click and redirect immediately
+        function returnToHome() {
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>
