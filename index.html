@@ -452,17 +452,17 @@
         (currentHour >= 4 && currentHour < 16) ||
         (currentHour >= 16 && currentHour < 4)
       ) {
-        // Show the evening chart and hide the morning chart
-        morningChart.style.display = "none";
-        eveningChart.style.display = "block";
-        prev_eveningData.style.display = "block";
-        prev_morningData.style.display = "none";
-      } else {
         // Show the morning chart and hide the evening chart
         morningChart.style.display = "block";
         eveningChart.style.display = "none";
         prev_morningData.style.display = "block";
         prev_eveningData.style.display = "none";
+      } else {
+        // Show the evening chart and hide the morning chart
+        morningChart.style.display = "none";
+        eveningChart.style.display = "block";
+        prev_morningData.style.display = "none";
+        prev_eveningData.style.display = "block";
       }
 
       // Fetch and display data when the page loads
