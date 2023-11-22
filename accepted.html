@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Button Page</title>
+    <script>
+      // Check if the user is logged in
+      function checkLogin() {
+        // Get the login status from the session storage
+        var isLoggedIn = sessionStorage.getItem("isLoggedIn");
+        // Redirect to login.html if not logged in
+        if (!isLoggedIn) {
+          window.location.href = "login.html";
+        }
+      }
+
+      // Call the checkLogin function when the page loads
+      window.onload = checkLogin;
+    </script>
+  </head>
+  <body>
+    <button id="button1">Button 1</button>
+    <button id="button2">Button 2</button>
+  </body>
+</html>

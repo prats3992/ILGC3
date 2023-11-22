@@ -75,12 +75,15 @@
       function checkLogin() {
         var username = document.getElementById("username").value;
         var password = document.getElementById("password").value;
+        let isLoggedIn = true;
         const holder = "πρατηαμ";
         const user_hold = "Pratham";
         // Check if username and password match
         if (username === user_hold && password === holder) {
+          sessionStorage.setItem("isLoggedIn", isLoggedIn);
           window.location.href = "accepted.html"; // Redirect to accepted.html
         } else {
+          sessionStorage.setItem("isLoggedIn", isLoggedIn);
           window.location.href = "denied.html"; // Redirect to denied.html
         }
       }
