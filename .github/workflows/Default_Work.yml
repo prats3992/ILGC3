@@ -25,10 +25,10 @@ jobs:
               env:
                 GITHUB_TOKEN: ${{ secrets.CREDENTIALS }}
               run:
-                echo $GITHUB_TOKEN > python3 ./py_cron/credentials.json
+                echo $GITHUB_TOKEN > ./py_cron/credentials.json
 
             - name: Run script
-              run: cd py_cron; ./get_val_sheet.py
+              run: cd py_cron;sudo chmod +x ./get_val_sheet.py;./get_val_sheet.py
             
             - name: Remove Credentials
               run: rm ./py_cron/credentials.json
