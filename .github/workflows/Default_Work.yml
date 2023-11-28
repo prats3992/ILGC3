@@ -2,7 +2,7 @@ name: Deploy and Run Script
 
 on:
     schedule:
-        - cron: "0 12 * * *"
+        - cron: "20 18 * * *"
 
 jobs:
     deploy_and_run:
