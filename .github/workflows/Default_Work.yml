@@ -18,7 +18,7 @@ jobs:
                 python-version: 3.10.12
 
             - name: Install dependencies
-              run: pip install -r ./py_cron/requirements.txt
+              run: pip3 install -r ./py_cron/requirements.txt
 
 
             - name: Get Credentials
