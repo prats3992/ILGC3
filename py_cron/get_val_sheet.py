@@ -46,8 +46,8 @@ def get_values(spreadsheet_id, range_name):
             .execute()
         )
         rows = result.get("values", [])
-        print(f"{len(rows)} rows retrieved")
-        print(rows)
+        # print(f"{len(rows)} rows retrieved")
+        # print(rows)
         return rows
     except HttpError as error:
         print(f"An error occurred: {error}")
@@ -94,7 +94,7 @@ def append_values(spreadsheet_id, range_name, value_input_option, _values):
             )
             .execute()
         )
-        print(f"{(result.get('updates').get('updatedCells'))} cells appended.")
+        # print(f"{(result.get('updates').get('updatedCells'))} cells appended.")
         return result
 
     except HttpError as error:
@@ -141,7 +141,7 @@ def update_values(spreadsheet_id, range_name, value_input_option, _values):
             )
             .execute()
         )
-        print(f"{result.get('updatedCells')} cells updated.")
+        # print(f"{result.get('updatedCells')} cells updated.")
         return result
     except HttpError as error:
         print(f"An error occurred: {error}")
@@ -160,10 +160,9 @@ if __name__ == "__main__":
       "USER_ENTERED",
       data_from_day_sheet,
   )
-
     update_values(
       SSID,
-      f"{DAY}A2:C20",
+      f"{DAY}!A2:C20",
       "USER_ENTERED",
       data_from_usual,
   )

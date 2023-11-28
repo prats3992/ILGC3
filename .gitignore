@@ -4,3 +4,5 @@ node_modules
 try_new_things*
 demo.js
 *env
+py_cron/token.json
+py_cron/credentials.json
