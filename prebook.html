@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Pre-Book Slot</title>
+    <link rel="stylesheet" href="prebook.css" />
+    <script src="prebook.js" defer></script>
+    <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
+    <style>
+      .additional-questions-morning {
+        display: none;
+      }
+      .additional-questions-evening {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Gym Slot Pre-Booking</h1>
+
+    <form action="/submit-form" method="POST" id="myForm">
+      <label for="name">Name:</label>
+      <input type="text" id="name" name="name" required /><br /><br />
+
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email" required /><br /><br />
+
+      <label for="choice">Choose one:</label><br />
+      <input
+        type="radio"
+        id="choice1"
+        name="choice"
+        value="morning"
+        onclick="showAdditionalQuestions()"
+      />
+      <label for="choice1">Morning</label><br />
+      <input
+        type="radio"
+        id="choice2"
+        name="choice"
+        value="evening"
+        onclick="showAdditionalQuestions()"
+      />
+      <label for="choice2">Evening</label><br /><br />
+
+      <div class="additional-questions-morning" id="additionalQuestionsMorn">
+        <label for="timeSelectionMorn">Select Time:</label>
+        <br />
+        <select multiple id="timeSelectionMorn" name="timeSelectionMorn">
+          <option value="6-7">6 am to 7 am</option>
+          <option value="7-8">7 am to 8 am</option>
+          <option value="8-9">8 am to 9 am</option>
+        </select>
+      </div>
+      <div class="additional-questions-evening" id="additionalQuestionsEve">
+        <label for="timeSelectionEve">Select Time:</label>
+        <br />
+        <select multiple id="timeSelectionEve" name="timeSelectionEve">
+          <option value="16:30-17:30">4:30 pm to 5:30 pm</option>
+          <option value="17:30-18:30">5:30 pm to 6:30 pm</option>
+          <option value="18:30-19:30">6:30 pm to 7:30 pm</option>
+          <option value="19:30-20:30">7:30 pm to 8:30 pm</option>
+          <option value="20:30-22:00">8:30 pm to 10:00 pm</option>
+        </select>
+      </div>
+      <input
+        type="hidden"
+        id="email-template"
+        name="email_template"
+        value="template_gprnmd8"
+      />
+      <button type="submit">Submit</button>
+    </form>
+    <div id="successMessage" style="display: none">
+      <h2>Your slot has been booked!</h2>
+    </div>
+
+    <script>
+      function showAdditionalQuestions() {
+        var choice = document.querySelector(
+          'input[name="choice"]:checked'
+        ).value;
+        var additionalQuestionsDiv_1 = document.getElementById(
+          "additionalQuestionsMorn"
+        );
+        var additionalQuestionsDiv_2 = document.getElementById(
+          "additionalQuestionsEve"
+        );
+
+        if (choice === "morning") {
+          additionalQuestionsDiv_1.style.display = "block";
+          additionalQuestionsDiv_2.style.display = "none";
+        } else if (choice === "evening") {
+          additionalQuestionsDiv_1.style.display = "none";
+          additionalQuestionsDiv_2.style.display = "block";
+        }
+      }
+    </script>
+  </body>
+</html>
