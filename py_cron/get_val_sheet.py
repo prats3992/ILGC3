@@ -147,7 +147,47 @@ def update_values(spreadsheet_id, range_name, value_input_option, _values):
         print(f"An error occurred: {error}")
         return error
 
+def clear_values(spreadsheet_id, range_name, value_input_option, _values=None):
+    """
+    Creates the batch_update the user has access to.
+    Load pre-authorized user credentials from the environment.
+    TODO(developer) - See https://developers.google.com/identity
+    for guides on implementing OAuth2 for the application.
+    """
+    creds = None
+    if os.path.exists("token.json"):
+        creds = Credentials.from_authorized_user_file("token.json", SCOPES)
+    # If there are no (valid) credentials available, let the user log in.
+    if not creds or not creds.valid:
+        if creds and creds.expired and creds.refresh_token:
+            creds.refresh(Request())
+        else:
+            flow = InstalledAppFlow.from_client_secrets_file(
+                "credentials.json", SCOPES
+            )
 
+            creds = flow.run_local_server(port=8000)
+        # Save the credentials for the next run
+        with open("token.json", "w") as token:
+            token.write(creds.to_json())
+    try:
+        service = build("sheets", "v4", credentials=creds)
+        values = _values if _values else [[" "]*3]*19
+        body = {"values": values}
+        result = (
+            service.spreadsheets()
+            .values()
+            .update(spreadsheetId=spreadsheet_id,
+                range=range_name,
+                valueInputOption=value_input_option,
+                body=body)
+            .execute()
+        )
+        # print(f"{result.get('clearedRange')} cells updated.")
+        return result
+    except HttpError as error:
+        print(f"An error occurred: {error}")
+        return error
 
 
 if __name__ == "__main__":
@@ -165,4 +205,9 @@ if __name__ == "__main__":
       f"{DAY}!A2:C20",
       "USER_ENTERED",
       data_from_usual,
+  )
+    clear_values(
+      SSID,
+      f"Trial!A2:C20",
+      "USER_ENTERED",
   )

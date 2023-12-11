@@ -1,0 +1,34 @@
+name: Deploy and Upload Random Data
+
+on:
+    schedule:
+        - cron: "*/30 6-9 * * *"
+
+jobs:
+    deploy_and_run:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v2
+
+            - name: Set up Python
+              uses: actions/setup-python@v2
+              with:
+                python-version: 3.10.12
+
+            - name: Install dependencies
+              run: pip3 install --upgrade google-api-python-client google-auth-httplib2 google-auth-oauthlib
+
+
+            - name: Get Credentials
+              env:
+                GITHUB_TOKEN: ${{ secrets.CREDENTIALS }}
+              run:
+                echo $GITHUB_TOKEN > ./py_cron/credentials.json
+
+            - name: Run script
+              run: cd py_cron;sudo chmod +x *py;./upload_random.py
+            
+            - name: Remove Credentials
+              run: rm ./py_cron/credentials.json
