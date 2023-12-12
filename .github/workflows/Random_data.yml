@@ -2,7 +2,7 @@ name: Deploy and Upload Random Data
 
 on:
     schedule:
-        - cron: "*/30 6-9 * * *"
+        - cron: "*/30 12-14 * * *"
 
 jobs:
     deploy_and_run:
