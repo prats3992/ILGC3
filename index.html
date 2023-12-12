@@ -39,35 +39,35 @@
     </script>
     <style>
       ul {
-  list-style-type: none;
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-  background-color: #ebebeb;
-  position: fixed;
-  top: 0;
-  width: 100%;
-}
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        background-color: #ebebeb;
+        position: fixed;
+        top: 0;
+        width: 100%;
+      }
 
-li {
-  float: left;
-}
+      li {
+        float: left;
+      }
 
-li a {
-  display: block;
-  color: #333;
-  text-align: center;
-  padding: 14px 16px;
-  text-decoration: none;
-}
+      li a {
+        display: block;
+        color: #333;
+        text-align: center;
+        padding: 14px 16px;
+        text-decoration: none;
+      }
 
-li a:hover:not(.active) {
-  background-color: rgba(0, 0, 139, 0.150);
-}
+      li a:hover:not(.active) {
+        background-color: rgba(0, 0, 139, 0.15);
+      }
 
-.active {
-  background-color: rgba(0, 0, 139, 0.716);
-}
+      .active {
+        background-color: rgba(0, 0, 139, 0.716);
+      }
     </style>
   </head>
   <body>
@@ -78,7 +78,7 @@ li a:hover:not(.active) {
       <li><a href="about.html">About</a></li>
     </ul>
     <header>
-      <h1 style="padding-top: 20px;">Real Life Crowding Statistics</h1>
+      <h1 style="padding-top: 20px">Real Life Crowding Statistics</h1>
       <div id="liveTime">
         <h2 style="margin: 10px 4px">
           <span id="numppllatest">Loading...</span>
@@ -446,7 +446,12 @@ li a:hover:not(.active) {
           const ticks = [];
           for (let hour = 6; hour <= 9; hour++) {
             for (let minute = 0; minute < 60; minute += 30) {
-              ticks.push([hour, minute, 0]);
+              if (
+                !(hour === 6 && minute === 0) &&
+                !(hour === 9 && minute === 30)
+              ) {
+                ticks.push([hour, minute, 0]);
+              }
             }
           }
           return ticks;
