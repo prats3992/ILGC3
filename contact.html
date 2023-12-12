@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Contact Us</title>
+    <link rel="stylesheet" href="contact.css" />
+    <script src="contact.js" defer></script>
+    <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
+  </head>
+  <body>
+    <h1>Contact Us</h1>
+    <form id="contact-form">
+      <label for="name">Name:</label>
+      <input type="text" id="name" name="name" required />
+
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email" required />
+
+      <label for="message">Message:</label>
+      <textarea
+        id="message"
+        name="message"
+        rows="5"
+        cols="30"
+        required
+      ></textarea>
+      <input
+        type="hidden"
+        id="email-template"
+        name="email_template"
+        value="template_ftk3tcj"
+      />
+      <button type="submit">Submit</button>
+    </form>
+    <div id="thank-you-message" style="display: none">
+        Thank you for your message. We will be in touch soon.
+      </div>
+  </body>
+</html>
