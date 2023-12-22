@@ -1,6 +1,6 @@
 /**
-* Code to test ThingSpeak API
-*/
+ * Code to test ThingSpeak API
+ */
 
 // ------style guard ----
 
@@ -10,12 +10,11 @@ extern "C"
 
 {
 
-  #endif
+#endif
 
   uint8_t temprature_sens_read();
 
-  #ifdef __cplusplus
-
+#ifdef __cplusplus
 }
 
 #endif
@@ -30,9 +29,9 @@ uint8_t temprature_sens_read();
 
 // -----netwrok credentials
 
-const char * ssid = "Smart Devices"; // your network SSID (name)
+const char *ssid = "Smart Devices"; // your network SSID (name)
 
-const char * password = "Devices@2023"; // your network password
+const char *password = "Devices@2023"; // your network password
 
 WiFiClient client;
 
@@ -40,7 +39,7 @@ WiFiClient client;
 
 unsigned long myChannelNumber = 1;
 
-const char * myWriteAPIKey = "8IZGBOUN0CQP64MV";
+const char *myWriteAPIKey = "8IZGBOUN0CQP64MV";
 
 // ----- Timer variables
 
@@ -48,7 +47,8 @@ unsigned long lastTime = 0;
 
 unsigned long timerDelay = 1000;
 
-void setup() {
+void setup()
+{
 
   Serial.begin(115200); // Initialize serial
 
@@ -72,18 +72,16 @@ void setup() {
       Serial.println(")");
 
       delay(1000);
-
     }
 
     Serial.println("\nConnected. ");
-
   }
 
   ThingSpeak.begin(client); // Initialize ThingSpeak
-
 }
 
-void loop() {
+void loop()
+{
 
   if ((millis() - lastTime) > timerDelay)
 
@@ -119,24 +117,22 @@ void loop() {
 
     int x = ThingSpeak.writeFields(myChannelNumber,
 
-      myWriteAPIKey);
+                                   myWriteAPIKey);
 
     if (x == 200)
 
     {
 
       Serial.println("Channel update successful.");
-
-    } else
+    }
+    else
 
     {
 
       Serial.println("Problem updating channel. HTTP error code " + String(x));
-
     }
 
     lastTime = millis();
-
   }
   delay(3000);
 }
